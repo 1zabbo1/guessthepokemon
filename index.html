@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guess the Pokémon</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        .game-container {
+            margin-top: 50px;
+        }
+
+        .pokemon-image {
+            width: 200px;
+            height: 200px;
+        }
+
+        #guess-input {
+            padding: 10px;
+            font-size: 18px;
+        }
+
+        #check-button {
+            padding: 10px 20px;
+            font-size: 18px;
+        }
+
+        #result {
+            font-size: 24px;
+            font-weight: bold;
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>Guess the Pokémon</h1>
+        <img src="" alt="Pokemon" class="pokemon-image" id="pokemon-image">
+        <input type="text" id="guess-input" placeholder="Enter your guess">
+        <button id="check-button">Check</button>
+        <p id="result"></p>
+    </div>
+
+    <script>
+        const apiUrl = 'https://pokeapi.co/api/v2/pokemon/';
+        let currentPokemon = null;
+
+        const pokemonImage = document.getElementById('pokemon-image');
+        const guessInput = document.getElementById('guess-input');
+        const checkButton = document.getElementById('check-button');
+        const resultMessage = document.getElementById('result');
+
+        async function fetchRandomPokemon() {
+            const randomId = Math.floor(Math.random() * 898) + 1; // There are 898 Pokémon in the API
+            const response = await fetch(`${apiUrl}${randomId}`);
+            const data = await response.json();
+            currentPokemon = data;
+
+            if (data && data.sprites && data.sprites.front_default) {
+                pokemonImage.src = data.sprites.front_default;
+            }
+        }
+
+        function checkGuess() {
+            if (!currentPokemon) {
+                return;
+            }
+
+            const userGuess = guessInput.value.toLowerCase();
+            const correctPokemonName = currentPokemon.name.toLowerCase();
+
+            if (userGuess === correctPokemonName) {
+                resultMessage.textContent = 'Correct!';
+            } else {
+                resultMessage.textContent = 'Incorrect. Try again.';
+            }
+        }
+
+        fetchRandomPokemon(); // Start the game with a random Pokémon
+        checkButton.addEventListener('click', checkGuess);
+    </script>
+</body>
+</html>
